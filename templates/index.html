@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Waste Classification GUI</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 20px;
+
+            background-color: #f5f5f5;
+
+        }
+
+        h1 {
+
+            color: #2c3e50;
+
+            text-align: center;
+
+        }
+
+        .upload-container {
+
+            background-color: white;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            margin-bottom: 20px;
+
+        }
+
+        .result-container {
+
+            background-color: white;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            display: none;
+
+        }
+
+        #result-image {
+
+            max-width: 100%;
+
+            max-height: 600px;
+
+            display: block;
+
+            margin: 0 auto;
+
+        }
+
+        .file-input {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+        }
+
+        .button {
+
+            background-color: #3498db;
+
+            color: white;
+
+            border: none;
+
+            padding: 10px 20px;
+
+            border-radius: 4px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            margin-top: 10px;
+
+        }
+
+        .button:hover {
+
+            background-color: #2980b9;
+
+        }
+
+        .loading {
+
+            text-align: center;
+
+            display: none;
+
+            margin-top: 20px;
+
+        }
+
+        .spinner {
+
+            border: 4px solid #f3f3f3;
+
+            border-top: 4px solid #3498db;
+
+            border-radius: 50%;
+
+            width: 30px;
+
+            height: 30px;
+
+            animation: spin 1s linear infinite;
+
+            margin: 0 auto;
+
+        }
+
+        @keyframes spin {
+
+            0% { transform: rotate(0deg); }
+
+            100% { transform: rotate(360deg); }
+
+        }
+
+        .detection-list {
+
+            list-style-type: none;
+
+            padding: 0;
+
+        }
+
+        .detection-item {
+
+            padding: 10px;
+
+            margin: 5px 0;
+
+            border-radius: 4px;
+
+            color: white;
+
+            font-weight: bold;
+
+        }
+
+        .Glass { background-color: #2ecc71; }
+
+        .Metal { background-color: #3498db; }
+
+        .Paper { background-color: #e67e22; }
+
+        .Plastic { background-color: #9b59b6; }
+
+        .Organic { background-color: #ffff00; }
+
+        .Clothes { background-color: #ff1493; }
+
+        .legend {
+
+            display: flex;
+
+            justify-content: center;
+
+            margin-top: 20px;
+
+        }
+
+        .legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            margin: 0 10px;
+
+        }
+
+        .legend-color {
+
+            width: 20px;
+
+            height: 20px;
+
+            margin-right: 5px;
+
+            border-radius: 3px;
+
+        }
+
+        .user-info {
+
+            text-align: right;
+
+            font-size: 0.8em;
+
+            color: #7f8c8d;
+
+            margin-top: 30px;
+
+        }
+
+        .info-box {
+
+            background-color: #eaf2f8;
+
+            border-left: 4px solid #3498db;
+
+            padding: 10px 15px;
+
+            margin-top: 20px;
+
+            font-size: 0.9em;
+
+            line-height: 1.4;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Waste Classification GUI</h1>
+
+    
+
+    <div class="upload-container">
+
+        <h2>Upload an Image</h2>
+
+        <form id="upload-form" enctype="multipart/form-data">
+
+            <div class="file-input">
+
+                <input type="file" id="file-input" name="file" accept=".jpg, .jpeg, .png">
+
+                <button type="submit" class="button">Classify Waste</button>
+
+            </div>
+
+        </form>
+
+        <div class="loading" id="loading">
+
+            <div class="spinner"></div>
+
+            <p>Processing image...</p>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="result-container" id="result-container">
+
+        <h2>Classification Results</h2>
+
+        <div class="legend">
+
+            <div class="legend-item">
+
+                <div class="legend-color Glass"></div>
+
+                <span>Glass</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-color Metal"></div>
+
+                <span>Metal</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-color Paper"></div>
+
+                <span>Paper</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-color Plastic"></div>
+
+                <span>Plastic</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-color Organic"></div>
+
+                <span>Organic</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-color Clothes"></div>
+
+                <span>Clothes</span>
+
+            </div>
+
+        </div>
+
+        <img id="result-image" src="">
+
+        <h3>Detected Items:</h3>
+
+        <ul class="detection-list" id="detection-list">
+
+            <!-- Detections will be added here -->
+
+        </ul>
+
+    </div>
+
+    
+
+    <div class="user-info">
+
+        <p>Current User: yassin | Current Time: 2025-05-05 22:04:25</p>
+
+    </div>
+
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Handle form submission
+
+            const form = document.getElementById('upload-form');
+
+            form.addEventListener('submit', function(e) {
+
+                e.preventDefault();
+
+                
+
+                const fileInput = document.getElementById('file-input');
+
+                const file = fileInput.files[0];
+
+                
+
+                if (!file) {
+
+                    alert('Please select an image file');
+
+                    return;
+
+                }
+
+                
+
+                // Show loading spinner
+
+                document.getElementById('loading').style.display = 'block';
+
+                
+
+                // Create FormData and send request
+
+                const formData = new FormData();
+
+                formData.append('file', file);
+
+                
+
+                fetch('/upload', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                })
+
+                .then(response => response.json())
+
+                .then(data => {
+
+                    // Hide loading spinner
+
+                    document.getElementById('loading').style.display = 'none';
+
+                    
+
+                    if (data.success) {
+
+                        // Show results container
+
+                        document.getElementById('result-container').style.display = 'block';
+
+                        
+
+                        // Set result image
+
+                        document.getElementById('result-image').src = 'data:image/png;base64,' + data.img_data;
+
+                        
+
+                        // Add detections to list
+
+                        const detectionList = document.getElementById('detection-list');
+
+                        detectionList.innerHTML = '';
+
+                        
+
+                        if (data.detections.length === 0) {
+
+                            detectionList.innerHTML = '<li>No waste items detected</li>';
+
+                        } else {
+
+                            data.detections.forEach(detection => {
+
+                                const listItem = document.createElement('li');
+
+                                listItem.className = `detection-item ${detection.class}`;
+
+                                listItem.textContent = `${detection.class}: ${detection.confidence}% confidence`;
+
+                                detectionList.appendChild(listItem);
+
+                            });
+
+                        }
+
+                        
+
+                        // Scroll to results
+
+                        document.getElementById('result-container').scrollIntoView({
+
+                            behavior: 'smooth'
+
+                        });
+
+                    } else {
+
+                        alert('Error: ' + data.error);
+
+                    }
+
+                })
+
+                .catch(error => {
+
+                    document.getElementById('loading').style.display = 'none';
+
+                    alert('Error processing image: ' + error);
+
+                });
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>
